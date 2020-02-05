@@ -1,5 +1,5 @@
 package postex
-//Contains functions for sending and receiving data.
+//Contains functions for sending and receiving files.
 
 import "os"
 import "net"

