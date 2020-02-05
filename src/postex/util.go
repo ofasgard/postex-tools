@@ -1,4 +1,5 @@
 package postex
+//Contains general purpose helper functions.
 
 import "os"
 

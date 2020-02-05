@@ -1,4 +1,5 @@
 package postex
+//Contains functions for spawning various different types of shell, local and remote.
 
 import "fmt"
 import "os"

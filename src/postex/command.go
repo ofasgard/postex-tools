@@ -1,4 +1,5 @@
 package postex
+//Contains functions for executing commands.
 
 import "os/exec"
 import "io"
