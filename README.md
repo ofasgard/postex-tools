@@ -10,7 +10,14 @@ TODO:
 - Add support for encrypted shells.
 - Add support for DNS tunneling.
 - Add support for tunneling over HTTPS.
+- Make all reverse shells compatible with Meterpreter via post/manage/multi/shell\_to\_meterpreter.
 
-## Building
+## Tool List
+
+Currently, this project includes the following functional tools, built using the postex package:
+
+- `shell-reverse-tcp.go` is a reverse TCP shell, netcat-style, that can be compiled for UNIX or Windows.
+- `shell-reverse-udp.go` is a reverse UDP shell, netcat-style, that can be compiled for UNIX or Windows.
+- `smuggler.go` is a tool for sending or receiving files by connecting to a remote host over TCP.
 
 If you want to build the tools in the `tools/` folder, it should be enough to clone this repository, set it as your GOPATH, and run the build script in the `tools/` folder.

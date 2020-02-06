@@ -8,9 +8,8 @@ import "bytes"
 func spawnShell(shellpath string) (*shell,error) {
 	session := shell{}
 	session.command_shell = exec.Command(shellpath)
-	session.stdout_pipe,_ = session.command_shell.StdoutPipe()
-	session.stderr_pipe,_ = session.command_shell.StderrPipe()
-	session.stdin_pipe,_ = session.command_shell.StdinPipe()
+	session.stdin_writer,_ = session.command_shell.StdinPipe()
+	session.stdout_reader,_ = session.command_shell.StdoutPipe()
 	return &session,nil
 }
 
@@ -18,9 +17,8 @@ func spawnShell(shellpath string) (*shell,error) {
 
 type shell struct {
 	command_shell *exec.Cmd
-	stdout_pipe io.ReadCloser
-	stderr_pipe io.ReadCloser
-	stdin_pipe io.WriteCloser
+	stdin_writer io.Writer
+	stdout_reader io.Reader
 }
 
 func (s shell) launch() {
@@ -33,18 +31,18 @@ func (s shell) stop() {
 
 func (s shell) send(cmd string) {
 	//this blocks
-	s.stdin_pipe.Write([]byte(cmd))
+	io.WriteString(s.stdin_writer, cmd)
 }
 
 func (s shell) recv() string {
 	//this blocks too
 	out := bytes.Buffer{}
 	buf := make([]byte, 500)
-	written,_ := s.stdout_pipe.Read(buf)
+	written,_ := s.stdout_reader.Read(buf)
 	out.WriteString(string(buf))
 	for written == 500 {
 		buf = make([]byte, 500)
-		written,_ = s.stdout_pipe.Read(buf)
+		written,_ = s.stdout_reader.Read(buf)
 		out.WriteString(string(buf))
 	}
 	return out.String()

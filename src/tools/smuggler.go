@@ -1,4 +1,5 @@
 package main
+//Send or receive a file by connecting to a remote TCP port.
 
 import "postex"
 import "fmt"
