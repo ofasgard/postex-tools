@@ -35,12 +35,14 @@ func LocalShell(filepath string) {
 	for running == true {
 		//get input
 		msg := make([]byte, 500)
-		os.Stdin.Read(msg)
+		r,_ := os.Stdin.Read(msg)
 		if strings.HasPrefix(string(msg), "exit") {
 			running = false
 		}
 		//now send the command
-		string_msg := strings.TrimRight(string(msg), "\r\n")
+		string_msg := fmt.Sprintf("%s", msg[0:r])
+		string_msg = strings.TrimRight(string_msg, "\r\n")
+		string_msg += "\n"
 		session.send(string_msg)
 	}
 }
