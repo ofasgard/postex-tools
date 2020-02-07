@@ -10,7 +10,6 @@ TODO:
 - Add support for encrypted shells.
 - Add support for DNS tunneling.
 - Add support for tunneling over HTTPS.
-- Make all reverse shells compatible with Meterpreter via post/manage/multi/shell\_to\_meterpreter.
 
 ## Tool List
 
