@@ -17,6 +17,7 @@ Currently, this project includes the following functional tools, built using the
 
 - `shell-reverse-tcp.go` is a reverse TCP shell, netcat-style, that can be compiled for UNIX or Windows.
 - `shell-reverse-udp.go` is a reverse UDP shell, netcat-style, that can be compiled for UNIX or Windows.
+- `shell-reverse-tcp-tls.go` is a reverse TCP shell, ncat-style, that can be compiled for UNIX or Windows. It works with the --ssl option for ncat.
 - `smuggler.go` is a tool for sending or receiving files by connecting to a remote host over TCP.
 
 If you want to build the tools in the `tools/` folder, it should be enough to clone this repository, set it as your GOPATH, and run the build script in the `tools/` folder.
