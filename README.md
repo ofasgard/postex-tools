@@ -7,7 +7,6 @@ A set of libraries and accompanying tools for post-exploitation, written in Gola
 
 TODO:
 
-- Add support for encrypted shells.
 - Add support for DNS tunneling.
 - Add support for tunneling over HTTPS.
 
