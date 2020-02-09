@@ -20,4 +20,4 @@ Currently, this project includes the following functional tools, built using the
 - `smuggler.go` is a tool for sending or receiving files by connecting to a remote host over TCP.
 - `smuggler-tls.go` is the same as smuggler, but sends or receive files over TLS. It works with the --ssl option for ncat.
 
-If you want to build the tools in the `tools/` folder, it should be enough to clone this repository, set it as your GOPATH, and run the build script in the `tools/` folder.
+If you want to build the programs in the `tools/` folder, it should be enough to clone this repository, set it as your GOPATH, and run the build script in the `tools/` folder.
