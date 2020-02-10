@@ -39,7 +39,7 @@ func (s shell) recv() string {
 	out := bytes.Buffer{}
 	buf := make([]byte, 500)
 	written,_ := s.stdout_reader.Read(buf)
-	out.WriteString(string(buf))
+	out.WriteString(string(buf[0:written]))
 	for written == 500 {
 		buf = make([]byte, 500)
 		written,_ = s.stdout_reader.Read(buf)

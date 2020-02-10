@@ -9,8 +9,8 @@ This project is split into two parts:
 
 TODO:
 
-- Add support for tunneling over HTTPS.
 - Add support for DNS tunneling.
+- Support for post-exploitation activities outside of shells and file exfiltration.
 
 ## Tool List
 
@@ -18,6 +18,7 @@ Currently, this project includes the following functional tools, built using the
 
 - `shell-reverse-tcp` is an ncat-style TCP reverse shell. There is a cleartext and TLS version (compatible with the `-ssl` option for ncat).
 - `shell-reverse-udp` is an ncat-style UDP reverse shell.
+- `shell-reverse-https` is a reverse shell that functions over HTTPS. Base64-encoded commands are retrieved with a GET request to /input, and base64-encoded output is returned with a POST request to /output.
 - `smuggler` is a tool for for sending or receiving files by connecting to a remote host over TCP. There is a cleartext and TLS version (compatible with the `-ssl` option for ncat).
 
 Each of the tool folders includes a `build.sh` script which will automatically compile 32-bit UNIX and Windows binaries.
