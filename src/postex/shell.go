@@ -212,8 +212,8 @@ func ReverseTCPShellTLS(filepath string, host string, port int, skip_verify bool
 * ReverseShellHTTPS(filepath string, host string, port int, inputUri string, outputUri string, skip_verify bool)
 *
 * Builds on the functionality in LocalShell() to send out an interactive shell by making HTTPS requests.
-* INPUT is retrieved by requesting inputUri and reading the base64-encoded response.
-* OUTPUT is returned by making a POST request to outputUri containing base64-encoded results.
+* INPUT is retrieved by periodically making a GET request to inputUri and reading the base64-encoded response.
+* OUTPUT is returned by making a POST request to outputUri with base64-encoded results.
 */
 
 func ReverseShellHTTPS(filepath string, host string, port int, inputUri string, outputUri string, skip_verify bool) {
