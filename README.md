@@ -7,11 +7,6 @@ This project is split into two parts:
 - The postex package contains various functions that should be useful for general post-exploitation.
 - The other folders in this repository contain sample Go programs that use the postex package to do things like open reverse shells or exfiltrate data.
 
-TODO:
-
-- Add support for DNS tunneling.
-- Support for post-exploitation activities outside of shells and file exfiltration.
-
 ## Tool List
 
 Currently, this project includes the following functional tools, built using the postex package:
