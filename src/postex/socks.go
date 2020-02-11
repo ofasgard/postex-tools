@@ -12,7 +12,7 @@ const SOCKS_VERSION = 5
 /*
 * StartSOCKSProxy(port int)
 *
-* Start a SOCKS5 proxy on the designated port; runs perpetually.
+* Start a SOCKS5 proxy on the designated port; runs perpetually and can handle multiple concurrent connections.
 */
 
 func StartSOCKSProxy(port int) {
@@ -50,8 +50,8 @@ func StartSOCKSProxy(port int) {
 /*
 * handleSOCKS (conn net.Conn) error
 *
-* Handle a single connection request from a SOCKS5 client.
-* Uses goroutines to concurrently send and receive data between the client and the remote host.
+* Handle a single connection request from a SOCKS5 client by invoking several helper functions.
+* This blocks and should be invoked from a goroutine if you want to handle connections concurrently.
 */
 
 func handleSOCKS(conn net.Conn) error {
@@ -66,58 +66,9 @@ func handleSOCKS(conn net.Conn) error {
 		return err
 	}
 	//open a connection to the remote host
-	connect_addr := net.TCPAddr{IP: addr, Port: port}
-	remote_conn,err := net.DialTCP("tcp", nil, &connect_addr)
-	if err != nil {
-		return err
-	}
-	//begin communication with client
-	client_signal := make(chan int, 0)
-	go func(conn net.Conn, remote_conn net.Conn, sig chan int) {
-		for {
-			buf := make([]byte, 4096)
-			n,err := conn.Read(buf)
-			if n == 0 {
-				break
-			}
-			if err != nil {
-				fmt.Println(string(err.Error()))
-				break
-			}
-			_,err = remote_conn.Write(buf[0:n])
-			if err != nil {
-				fmt.Println(string(err.Error()))
-				break
-			}
-		}
-		sig <- 1
-	}(conn, remote_conn, client_signal)
-	//begin communication with remote host
-	remote_signal := make(chan int, 0)
-	go func(conn net.Conn, remote_conn net.Conn, sig chan int) {
-		for {
-			buf := make([]byte, 4096)
-			n,err := remote_conn.Read(buf)
-			if n == 0 {
-				break
-			}
-			if err != nil {
-				fmt.Println(string(err.Error()))
-				break
-			}
-			_,err = conn.Write(buf[0:n])
-			if err != nil {
-				fmt.Println(string(err.Error()))
-				break
-			}
-		}
-		sig <- 1
-	}(conn, remote_conn, remote_signal)
-	<- client_signal //wait for client
-	<- remote_signal //wait for remote host
-	conn.Close()
-	remote_conn.Close()
-	return nil
+	//then handle communications between the client and the remote host
+	err = handleSOCKSCommunication(addr, port, conn)
+	return err
 }
 
 /*
@@ -239,6 +190,69 @@ func handleSOCKSConnection(conn net.Conn) (net.IP, int, error) {
 	resp[1] = byte(0)
 	_,err = conn.Write(resp)
 	return addr,port,err
+}
+
+/*
+* handleSOCKSCommunication(addr net.IP, port int, client_conn net.Conn) error
+*
+* Helper function that uses goroutines to concurrently send and receive data between the client and the remote host.
+* This function blocks until both conections are done sending and receiving; they are closed before returning.
+*/
+
+func handleSOCKSCommunication(addr net.IP, port int, client_conn net.Conn) error {
+	//open a connection to the remote host
+	connect_addr := net.TCPAddr{IP: addr, Port: port}
+	remote_conn,err := net.DialTCP("tcp", nil, &connect_addr)
+	if err != nil {
+		return err
+	}
+	//begin communicating with client
+	client_signal := make(chan int, 0)
+	go func(client_conn net.Conn, remote_conn net.Conn, sig chan int) {
+		for {
+			buf := make([]byte, 4096)
+			n,err := client_conn.Read(buf)
+			if n == 0 {
+				break
+			}
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
+			_,err = remote_conn.Write(buf[0:n])
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
+		}
+		sig <- 1
+	}(client_conn, remote_conn, client_signal)
+	//begin communicating with remote host
+	remote_signal := make(chan int, 0)
+	go func(client_conn net.Conn, remote_conn net.Conn, sig chan int) {
+		for {
+			buf := make([]byte, 4096)
+			n,err := remote_conn.Read(buf)
+			if n == 0 {
+				break
+			}
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
+			_,err = client_conn.Write(buf[0:n])
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
+		}
+		sig <- 1
+	}(client_conn, remote_conn, remote_signal)
+	<- client_signal //wait for client
+	<- remote_signal //wait for remote host
+	client_conn.Close()
+	remote_conn.Close()
+	return nil
 }
 
 //ERROR DEFINITIONS

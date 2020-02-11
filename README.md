@@ -4,7 +4,7 @@ A set of libraries and accompanying tools for post-exploitation, written in Gola
 
 This project is split into two parts:
 
-- The postex package contains various functions that should be useful for general post-exploitation.
+- The `postex` package contains various functions that should be useful for general post-exploitation.
 - The other folders in this repository contain sample Go programs that use the postex package to do things like open reverse shells or exfiltrate data.
 
 ## Tool List
