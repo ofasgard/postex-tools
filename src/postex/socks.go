@@ -66,8 +66,16 @@ func handleSOCKS(conn net.Conn) error {
 		return err
 	}
 	//open a connection to the remote host
+	connect_addr := net.TCPAddr{IP: addr, Port: port}
+	remote_conn,err := net.DialTCP("tcp", nil, &connect_addr)
+	if err != nil {
+		return err
+	}
 	//then handle communications between the client and the remote host
-	err = handleSOCKSCommunication(addr, port, conn)
+	err = handleSOCKSCommunication(conn, remote_conn)
+	//close both connections when we're done
+	conn.Close()
+	remote_conn.Close()
 	return err
 }
 
@@ -193,19 +201,13 @@ func handleSOCKSConnection(conn net.Conn) (net.IP, int, error) {
 }
 
 /*
-* handleSOCKSCommunication(addr net.IP, port int, client_conn net.Conn) error
+* handleSOCKSCommunication(client_conn net.Conn, remote_conn net.Conn) error
 *
 * Helper function that uses goroutines to concurrently send and receive data between the client and the remote host.
-* This function blocks until both conections are done sending and receiving; they are closed before returning.
+* This function blocks until both conections are done sending and receiving.
 */
 
-func handleSOCKSCommunication(addr net.IP, port int, client_conn net.Conn) error {
-	//open a connection to the remote host
-	connect_addr := net.TCPAddr{IP: addr, Port: port}
-	remote_conn,err := net.DialTCP("tcp", nil, &connect_addr)
-	if err != nil {
-		return err
-	}
+func handleSOCKSCommunication(client_conn net.Conn, remote_conn net.Conn) error {
 	//begin communicating with client
 	client_signal := make(chan int, 0)
 	go func(client_conn net.Conn, remote_conn net.Conn, sig chan int) {
@@ -250,8 +252,6 @@ func handleSOCKSCommunication(addr net.IP, port int, client_conn net.Conn) error
 	}(client_conn, remote_conn, remote_signal)
 	<- client_signal //wait for client
 	<- remote_signal //wait for remote host
-	client_conn.Close()
-	remote_conn.Close()
 	return nil
 }
 
