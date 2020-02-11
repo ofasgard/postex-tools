@@ -9,6 +9,12 @@ import "encoding/binary"
 
 const SOCKS_VERSION = 5
 
+/*
+* StartSOCKSProxy(port int)
+*
+* Start a SOCKS5 proxy on the designated port; runs perpetually.
+*/
+
 func StartSOCKSProxy(port int) {
 	//setup
 	port_str := ":" + strconv.Itoa(port)
@@ -41,7 +47,12 @@ func StartSOCKSProxy(port int) {
 	}
 }
 
-//FUNCTIONS FOR HANDLING SOCKS
+/*
+* handleSOCKS (conn net.Conn) error
+*
+* Handle a single connection request from a SOCKS5 client.
+* Uses goroutines to concurrently send and receive data between the client and the remote host.
+*/
 
 func handleSOCKS(conn net.Conn) error {
 	//perform the initial greeting
@@ -109,6 +120,13 @@ func handleSOCKS(conn net.Conn) error {
 	return nil
 }
 
+/*
+* handleSOCKSGreeting (conn net.Conn) error
+*
+* Helper function to handle the initial greeting part of the SOCKS5 protocol.
+* Receives the greeting from the client, validates it, and responds with the server choice.
+*/
+
 func handleSOCKSGreeting(conn net.Conn) error {
 	//parse greeting
 	buf := make([]byte, 2)
@@ -152,6 +170,14 @@ func handleSOCKSGreeting(conn net.Conn) error {
 	_,err = conn.Write(buf)
 	return err
 }
+
+/*
+* handleSOCKSConnection (conn net.Conn) (net.IP, int, error)
+*
+* Helper function to handle the connection request part of the SOCKS5 protocol.
+* Receives the request, validates it and responds.
+* This function returns the IP and port that will be required to establish a connection with the remote host.
+*/
 
 func handleSOCKSConnection(conn net.Conn) (net.IP, int, error) {
 	var addr net.IP
