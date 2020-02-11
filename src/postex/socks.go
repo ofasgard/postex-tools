@@ -1,18 +1,15 @@
-package main
-//package proxy
+package postex
 //Contains functions for implementing a SOCKS proxy server in Go.
+//It's quick and dirt and doesn't fully implement SOCKS5, but it'll do the job.
 
 import "net"
 import "strconv"
 import "fmt"
 import "encoding/binary"
 
-//IT WORKS!
-//but it needs a lot more testing
-
 const SOCKS_VERSION = 5
 
-func StartProxy(port int) {
+func StartSOCKSProxy(port int) {
 	port_str := ":" + strconv.Itoa(port)
 	server_addr,err := net.ResolveTCPAddr("tcp4", port_str)
 	if err != nil {
@@ -207,13 +204,4 @@ func (err errorSOCKS) Error() string {
 	return string(err)
 }
 
-//TEMPORARY MAIN FUNCTION
 
-func main() {
-	//this is temporary
-	StartProxy(1080)
-}
-
-//https://rushter.com/blog/python-socks-server/
-//curl --socks5-hostname localhost:1080 http://www.google.com/
-//https://en.wikipedia.org/wiki/SOCKS
