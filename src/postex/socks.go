@@ -1,6 +1,6 @@
 package postex
-//Contains functions for implementing a SOCKS proxy server in Go.
-//It's quick and dirt and doesn't fully implement SOCKS5, but it'll do the job.
+//Contains functions for implementing a SOCKS5 proxy server in Go.
+//It's quick and dirty and doesn't fully implement SOCKS5, but it'll do the job.
 
 import "net"
 import "strconv"
@@ -10,25 +10,31 @@ import "encoding/binary"
 const SOCKS_VERSION = 5
 
 func StartSOCKSProxy(port int) {
+	//setup
 	port_str := ":" + strconv.Itoa(port)
 	server_addr,err := net.ResolveTCPAddr("tcp4", port_str)
 	if err != nil {
 		fmt.Println(string(err.Error()))
 		return
 	}
+	//start the listener
 	listener,err := net.ListenTCP("tcp4", server_addr)
 	if err != nil {
 		fmt.Println(string(err.Error()))
 		return
 	}
+	defer listener.Close()
+	//accept connections
 	for {
 		conn,err := listener.Accept()
 		if err == nil {
-			err := handleSOCKS(conn)
-			if err != nil {
-				fmt.Println(string(err.Error()))
-			}
-			conn.Close()
+			//use a goroutine to concurrently handle connections
+			go func() {
+				err := handleSOCKS(conn)
+				if err != nil {
+					fmt.Println(string(err.Error()))
+				}
+			}()
 		} else {
 			fmt.Println(string(err.Error()))
 		}
@@ -54,9 +60,9 @@ func handleSOCKS(conn net.Conn) error {
 	if err != nil {
 		return err
 	}
-	defer remote_conn.Close()
 	//begin communication with client
-	go func(conn net.Conn, remote_conn net.Conn) {
+	client_signal := make(chan int, 0)
+	go func(conn net.Conn, remote_conn net.Conn, sig chan int) {
 		for {
 			buf := make([]byte, 4096)
 			n,err := conn.Read(buf)
@@ -73,24 +79,33 @@ func handleSOCKS(conn net.Conn) error {
 				break
 			}
 		}
-	}(conn, remote_conn)
+		sig <- 1
+	}(conn, remote_conn, client_signal)
 	//begin communication with remote host
-	for {
-		buf := make([]byte, 4096)
-		n,err := remote_conn.Read(buf)
-		if n == 0 {
-			break
+	remote_signal := make(chan int, 0)
+	go func(conn net.Conn, remote_conn net.Conn, sig chan int) {
+		for {
+			buf := make([]byte, 4096)
+			n,err := remote_conn.Read(buf)
+			if n == 0 {
+				break
+			}
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
+			_,err = conn.Write(buf[0:n])
+			if err != nil {
+				fmt.Println(string(err.Error()))
+				break
+			}
 		}
-		if err != nil {
-			fmt.Println(string(err.Error()))
-			break
-		}
-		_,err = conn.Write(buf[0:n])
-		if err != nil {
-			fmt.Println(string(err.Error()))
-			break
-		}
-	}
+		sig <- 1
+	}(conn, remote_conn, remote_signal)
+	<- client_signal //wait for client
+	<- remote_signal //wait for remote host
+	conn.Close()
+	remote_conn.Close()
 	return nil
 }
 
@@ -193,7 +208,7 @@ func handleSOCKSConnection(conn net.Conn) (net.IP, int, error) {
 	//check port
 	port_raw := buf[index:index+2]
 	port = int(binary.BigEndian.Uint16(port_raw))
-	//construct response
+	//construct response (we cheat a bit and just modify what we got from the client)
 	resp := buf[0:n]
 	resp[1] = byte(0)
 	_,err = conn.Write(resp)
