@@ -65,10 +65,12 @@ func handleSOCKS(conn net.Conn) error {
 			}
 			if err != nil {
 				fmt.Println(string(err.Error()))
+				break
 			}
 			_,err = remote_conn.Write(buf[0:n])
 			if err != nil {
 				fmt.Println(string(err.Error()))
+				break
 			}
 		}
 	}(conn, remote_conn)
@@ -81,10 +83,12 @@ func handleSOCKS(conn net.Conn) error {
 		}
 		if err != nil {
 			fmt.Println(string(err.Error()))
+			break
 		}
 		_,err = conn.Write(buf[0:n])
 		if err != nil {
 			fmt.Println(string(err.Error()))
+			break
 		}
 	}
 	return nil
