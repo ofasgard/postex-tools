@@ -11,8 +11,7 @@ This project is split into two parts:
 
 Currently, this project includes the following functional tools, built using the postex package:
 
-- `shell-reverse-tcp` is an ncat-style TCP reverse shell. There is a cleartext and TLS version (compatible with the '-ssl' option for ncat).
-- `shell-reverse-udp` is an ncat-style UDP reverse shell.
+- `shell-reverse` is an ncat-style reverse shell. Supports shells sent over TCP, UDP and TLS (compatible with the '-ssl' option for ncat).
 - `shell-reverse-https` is a reverse shell that functions over HTTPS. Base64-encoded commands are retrieved with a GET request to /input, and base64-encoded output is returned with a POST request to /output.
 - `smuggler` is a tool for sending or receiving files by connecting to a remote host over TCP. There is a cleartext and TLS version (compatible with the '-ssl' option for ncat).
 - `dirtysocks` is a portable SOCKS proxy that can be dropped onto a server and used for pivoting via SSH port forwarding.
