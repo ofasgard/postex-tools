@@ -12,5 +12,3 @@ GOOS=linux GOARCH=386 go build -o bin/shell-reverse src/shell-reverse/shell-reve
 GOOS=windows GOARCH=386 go build -o bin/shell-reverse.exe src/shell-reverse/shell-reverse.go
 GOOS=linux GOARCH=386 go build -o bin/smuggler src/smuggler/smuggler.go
 GOOS=windows GOARCH=386 go build -o bin/smuggler.exe src/smuggler/smuggler.go
-GOOS=linux GOARCH=386 go build -o bin/smuggler-tls src/smuggler/smuggler-tls.go
-GOOS=windows GOARCH=386 go build -o bin/smuggler-tls.exe src/smuggler/smuggler-tls.go

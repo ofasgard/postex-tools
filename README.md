@@ -26,6 +26,3 @@ $ cd postex-tools
 $ ./build.sh
 ```
 
-## TODO
-
-- Combine smuggler and smuggler-tls into a single program.
