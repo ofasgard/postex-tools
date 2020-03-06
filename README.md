@@ -16,4 +16,16 @@ Currently, this project includes the following functional tools, built using the
 - `dirtysocks` is a portable SOCKS proxy that can be dropped onto a server and used for pivoting via SSH port forwarding.
 - `shellcode` is a simple tool for executing shellcode hex strings on Windows or Linux. Try using it to execute a meterpreter payload!
 
-Each of the tool folders includes a `build.sh` script which will automatically compile 32-bit UNIX and Windows binaries.
+## Building
+
+This project doesn't have any external dependencies besides Go itself. To build it, just do:
+
+```shell
+$ git clone https://github.com/ofasgard/postex-tools
+$ cd postex-tools
+$ ./build.sh
+```
+
+## TODO
+
+- Combine smuggler and smuggler-tls into a single program.
