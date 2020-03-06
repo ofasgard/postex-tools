@@ -3,6 +3,7 @@
 
 package postex
 //Contains functions for loading and executing shellcode.
+//Credit to s3my0n for the original C shellcode caller.
 
 /*
 #include <stdio.h>
