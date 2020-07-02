@@ -26,3 +26,4 @@ $ cd postex-tools
 $ ./build.sh
 ```
 
+Note: you made need to install `gcc-multilib` or the equivalent for cross-platform compilation to work.
