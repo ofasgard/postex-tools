@@ -10,6 +10,8 @@ GOOS=linux GOARCH=386 go build -o bin/dirtysocks src/dirtysocks/dirtysocks.go
 GOOS=windows GOARCH=386 go build -o bin/dirtysocks.exe src/dirtysocks/dirtysocks.go 
 GOOS=linux GOARCH=386 CGO_ENABLED=1 go build -o bin/shellcode src/shellcode/shellcode-linux.go
 GOOS=windows GOARCH=386 go build -o bin/shellcode.exe src/shellcode/shellcode-windows.go
+#todo - linux version of shellcode-inject
+GOOS=windows GOARCH=386 go build -o bin/shellcode-inject.exe src/shellcode-inject/shellcode-inject-windows.go
 GOOS=linux GOARCH=386 go build -o bin/shell-reverse src/shell-reverse/shell-reverse.go
 GOOS=windows GOARCH=386 go build -o bin/shell-reverse.exe src/shell-reverse/shell-reverse.go
 GOOS=linux GOARCH=386 go build -o bin/smuggler src/smuggler/smuggler.go

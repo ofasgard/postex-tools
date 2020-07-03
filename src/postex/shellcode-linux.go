@@ -24,6 +24,8 @@ void s3my0n_caller(char *shellcode, size_t sclen) {
 import "C"
 import "unsafe"
 
+// Spawn a new process and load some shellcode into it.
+
 func ShellcodeLinux(sc []byte) error {
 	C.s3my0n_caller((*C.char)(unsafe.Pointer(&sc[0])), (C.size_t)(len(sc)))
 	return nil
