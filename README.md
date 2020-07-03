@@ -31,3 +31,17 @@ If you have trouble building or using any of the tools, the following notes may 
 
 - You may need to install `gcc-multilib` or the equivalent for cross-platform compilation to work.
 - In order to use the shellcode loader, you'll need to set the GOARCH variable to the correct architecture - `i386` for 32-bit shellcode, and `amd64` for 64-bit shellcode.
+
+## Using the Package
+
+If you just want to use the postex package in a project, you can do:
+
+```shell
+$ go get github.com/ofasgard/postex-tools/src/postex
+```
+
+And then subsequently:
+
+```go
+import "github.com/ofasgard/postex-tools/src/postex"
+```
