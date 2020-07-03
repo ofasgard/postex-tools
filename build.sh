@@ -4,6 +4,8 @@ export GOPATH=`pwd`
 export GOBIN=`pwd`/bin
 
 echo "Building all binaries..."
+echo "NOTE: You MUST change the GOARCH to the correct architecture for shellcode to work!"
+
 GOOS=linux GOARCH=386 go build -o bin/dirtysocks src/dirtysocks/dirtysocks.go
 GOOS=windows GOARCH=386 go build -o bin/dirtysocks.exe src/dirtysocks/dirtysocks.go 
 GOOS=linux GOARCH=386 CGO_ENABLED=1 go build -o bin/shellcode src/shellcode/shellcode-linux.go

@@ -14,7 +14,7 @@ Currently, this project includes the following functional tools, built using the
 - `shell-reverse` is an ncat-style reverse shell. Supports shells sent over TCP, UDP and TLS (compatible with the '-ssl' option for ncat). Also supports an HTTPS shell that sends base-64 encoded input and output via GET and POST requests.
 - `smuggler` is a tool for sending or receiving files by connecting to a remote host over TCP. There is a cleartext and TLS version (compatible with the '-ssl' option for ncat).
 - `dirtysocks` is a portable SOCKS proxy that can be dropped onto a server and used for pivoting via SSH port forwarding.
-- `shellcode` is a simple tool for executing shellcode hex strings on Windows or Linux. Try using it to execute a meterpreter payload!
+- `shellcode` is a simple tool for executing shellcode on Windows or Linux - provide it with a hex string or a path to a binary file containing shellcode. Try using it to execute a meterpreter payload!
 
 ## Building
 
@@ -26,4 +26,7 @@ $ cd postex-tools
 $ ./build.sh
 ```
 
-Note: you may need to install `gcc-multilib` or the equivalent for cross-platform compilation to work.
+If you have trouble building or using any of the tools, the following notes may be helpful:
+
+- You may need to install `gcc-multilib` or the equivalent for cross-platform compilation to work.
+- In order to use the shellcode loader, you'll need to set the GOARCH variable to the correct architecture - `i386` for 32-bit shellcode, and `amd64` for 64-bit shellcode.
