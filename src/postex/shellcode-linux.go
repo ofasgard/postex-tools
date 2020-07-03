@@ -58,6 +58,7 @@ void inject_caller(char *shellcode, size_t sclen, pid_t pid) {
 		result = ptrace(PTRACE_POKETEXT, pid, d, *s);
 		if (result < 0) { exit(1); }
 	}
+	REG_IP_VALUE(regs) += 2;
 }
 */
 import "C"
@@ -71,6 +72,7 @@ func ShellcodeLinux(sc []byte) error {
 }
 
 // Inject shellcode into an existing process.
+// Unfortunately, unlike the Windows variant, this will make the process hang or crash.
 
 func ShellcodeInjectLinux(sc []byte, pid int) error {
 	C.inject_caller((*C.char)(unsafe.Pointer(&sc[0])), (C.size_t)(len(sc)), (C.pid_t)(pid))
