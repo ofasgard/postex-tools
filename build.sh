@@ -3,16 +3,21 @@
 export GOPATH=`pwd`
 export GOBIN=`pwd`/bin
 
-echo "Building all binaries..."
-echo "NOTE: You MUST change the GOARCH to the correct architecture for shellcode to work!"
+export GOARCH=amd64
 
-GOOS=linux GOARCH=386 go build -o bin/dirtysocks src/dirtysocks/dirtysocks.go
-GOOS=windows GOARCH=386 go build -o bin/dirtysocks.exe src/dirtysocks/dirtysocks.go 
-GOOS=linux GOARCH=386 CGO_ENABLED=1 go build -o bin/shellcode src/shellcode/shellcode-linux.go
-GOOS=windows GOARCH=386 go build -o bin/shellcode.exe src/shellcode/shellcode-windows.go
-#todo - linux version of shellcode-inject
-GOOS=windows GOARCH=386 go build -o bin/shellcode-inject.exe src/shellcode-inject/shellcode-inject-windows.go
-GOOS=linux GOARCH=386 go build -o bin/shell-reverse src/shell-reverse/shell-reverse.go
-GOOS=windows GOARCH=386 go build -o bin/shell-reverse.exe src/shell-reverse/shell-reverse.go
-GOOS=linux GOARCH=386 go build -o bin/smuggler src/smuggler/smuggler.go
-GOOS=windows GOARCH=386 go build -o bin/smuggler.exe src/smuggler/smuggler.go
+echo "Building all binaries for '$GOARCH'..."
+
+GOOS=linux go build -o bin/dirtysocks src/dirtysocks/dirtysocks.go
+GOOS=windows go build -o bin/dirtysocks.exe src/dirtysocks/dirtysocks.go 
+
+GOOS=linux CGO_ENABLED=1 go build -o bin/shellcode src/shellcode/shellcode-linux.go
+GOOS=windows go build -o bin/shellcode.exe src/shellcode/shellcode-windows.go
+
+GOOS=linux CGO_ENABLED=1 go build -o bin/shellcode-inject src/shellcode-inject/shellcode-inject-linux.go
+GOOS=windows go build -o bin/shellcode-inject.exe src/shellcode-inject/shellcode-inject-windows.go
+
+GOOS=linux go build -o bin/shell-reverse src/shell-reverse/shell-reverse.go
+GOOS=windows go build -o bin/shell-reverse.exe src/shell-reverse/shell-reverse.go
+
+GOOS=linux go build -o bin/smuggler src/smuggler/smuggler.go
+GOOS=windows go build -o bin/smuggler.exe src/smuggler/smuggler.go
