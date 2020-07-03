@@ -15,7 +15,7 @@ Currently, this project includes the following functional tools, built using the
 - `smuggler` is a tool for sending or receiving files by connecting to a remote host over TCP. There is a cleartext and TLS version (compatible with the '-ssl' option for ncat).
 - `dirtysocks` is a portable SOCKS proxy that can be dropped onto a server and used for pivoting via SSH port forwarding.
 - `shellcode` is a simple tool for executing shellcode on Windows or Linux - provide it with a hex string or a path to a binary file containing shellcode. Try using it to execute a meterpreter payload!
-- `shellcode-inject` is identical to the previous tool, but allows you to inject shellcode into an existing process by providing a PID.
+- `shellcode-inject` is similar to the previous tool, but allows you to inject shellcode into an existing process by providing a PID. (Windows only)
 
 ## Building
 
