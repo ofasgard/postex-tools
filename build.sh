@@ -21,3 +21,6 @@ GOOS=windows go build -o bin/windows/shell-reverse.exe src/shell-reverse/shell-r
 
 GOOS=linux go build -o bin/linux/smuggler src/smuggler/smuggler.go
 GOOS=windows go build -o bin/windows/smuggler.exe src/smuggler/smuggler.go
+
+GOOS=linux go build -o bin/linux/xortool src/xortool/xortool.go
+GOOS=windows go build -o bin/windows/xortool.exe src/xortool/xortool.go
