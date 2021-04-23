@@ -16,7 +16,7 @@ Currently, this project includes the following functional tools, built using the
 - `dirtysocks` is a portable SOCKS proxy that can be dropped onto a server and used for pivoting via SSH port forwarding.
 - `shellcode` is a simple tool for executing shellcode on Windows or Linux - provide it with a hex string or a path to a binary file containing shellcode. Try using it to execute a meterpreter payload!
 - `shellcode-inject` is similar to the previous tool, but allows you to inject shellcode into an existing process by providing a PID.
-- `xortool` is a simple commandline tool for performing multi-byte XOR encryption and decryption of hex strings.
+- `xortool` is a simple commandline tool for performing multi-byte XOR encryption and decryption of hex strings or binaries.
 
 ## Building
 
