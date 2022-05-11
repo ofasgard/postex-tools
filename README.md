@@ -5,7 +5,7 @@ A set of libraries and accompanying tools for post-exploitation, written in Gola
 This project is split into two parts:
 
 - The `postex` package contains various functions that should be useful for general post-exploitation.
-- The other folders in this repository contain sample Go programs that use the postex package to do things like open reverse shells or exfiltrate data.
+- The `tools` folder contains sample Go programs that use the postex package to do things like open reverse shells or exfiltrate data.
 
 ## Tool List
 
@@ -33,16 +33,3 @@ If you have trouble building or using any of the tools, the following notes may 
 - You may need to install `gcc-multilib` or the equivalent for cross-platform compilation to work.
 - In order to use the shellcode loader, you'll need to set the GOARCH variable to the correct architecture - `386` for 32-bit shellcode, and `amd64` for 64-bit shellcode.
 
-## Using the Package
-
-If you just want to use the postex package in a project, you can do:
-
-```shell
-$ go get github.com/ofasgard/postex-tools/src/postex
-```
-
-And then subsequently:
-
-```go
-import "github.com/ofasgard/postex-tools/src/postex"
-```
